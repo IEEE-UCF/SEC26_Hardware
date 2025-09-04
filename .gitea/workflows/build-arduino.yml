@@ -45,7 +45,7 @@ jobs:
       # 6. (Optional) Upload the compiled binary as an artifact
       #    This allows you to download the .hex/.bin file from the Gitea UI
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: arduino-binary
           path: build/arduino
