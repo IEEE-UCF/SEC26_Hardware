@@ -1,0 +1,44 @@
+name: Build Arduino Sketch
+run-name: Build Arduino Sketch
+on:
+  push:
+    branches: # TODO: maybe change this?
+      - build/arduino
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup arduino cli
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      # 3. Update the core index and install the board's core
+      - name: Install platform
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+      
+      # 4. Install dependencies
+      - name: Install libraries
+        run: arduino-cli lib install Vl53l1x
+
+      # 5. Compile sketch
+      - name: Compile sketch
+        run: |
+          arduino-cli compile --fqbn arduino:avr:uno src/teensy/teensy.ino --verbose
+
+      # 6. (Optional) Upload the compiled binary as an artifact
+      #    This allows you to download the .hex/.bin file from the Gitea UI
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-binary
+          path: |
+            /home/gitea/build/**/*.hex
+            /home/gitea/build/**/*.bin
+            /home/gitea/build/**/*.elf
