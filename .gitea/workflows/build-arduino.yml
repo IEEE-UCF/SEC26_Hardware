@@ -4,6 +4,12 @@ on:
   push:
     branches: # TODO: maybe change this?
       - build/arduino
+  workflow_dispatch:
+    inputs:
+      build_name:
+        description: 'Optional build name or version'
+        required: false
+        default: 'dev-build'
 
 jobs:
   build:
