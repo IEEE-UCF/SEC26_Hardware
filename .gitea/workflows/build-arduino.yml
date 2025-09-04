@@ -40,15 +40,12 @@ jobs:
       - name: Compile sketch
         run: |
           mkdir build
-          arduino-cli compile --fqbn arduino:avr:uno src/teensy/teensy.ino --output-dir build --verbose
+          arduino-cli compile --fqbn arduino:avr:uno src/teensy/teensy.ino --output-dir build/arduino --verbose
 
       # 6. (Optional) Upload the compiled binary as an artifact
       #    This allows you to download the .hex/.bin file from the Gitea UI
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-binary
-          path: |
-            /home/gitea/build/**/*.hex
-            /home/gitea/build/**/*.bin
-            /home/gitea/build/**/*.elf
+          name: arduino-binary
+          path: build/arduino
