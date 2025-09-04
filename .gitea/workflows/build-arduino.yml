@@ -4,6 +4,7 @@ on:
   push:
     branches: # TODO: maybe change this?
       - build/arduino
+      - workflows/arduino
   workflow_dispatch:
     inputs:
       build_name:
