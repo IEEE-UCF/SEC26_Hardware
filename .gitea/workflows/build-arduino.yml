@@ -19,14 +19,10 @@ jobs:
       # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          github-token: ${{ secrets.GH_PAT }}
 
       # 2. Setup arduino cli
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v2
-        with:
-          github-token: ${{ secrets.GH_PAT }}
 
       # 3. Update the core index and install the board's core
       - name: Install platform
