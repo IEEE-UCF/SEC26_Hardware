@@ -1,13 +1,12 @@
-# This workflow builds an Arduino Nano sketch using a single-job strategy.
+# This workflow builds an ESP32 sketch using a single-job strategy.
 # It leverages caching for dependencies to speed up subsequent runs.
-name: Build Arduino Nano Sketch (Single Job)
-run-name: Build Arduino Nano Sketch for ${{ github.ref_name }}
+name: Build ESP32 Sketch (Single Job)
+run-name: Build ESP32 Sketch for ${{ github.ref_name }}
 
 on:
   push:
     branches:
       - workflows/esp32
-      - workflows/arduino
       - build/esp32
       - build/test
   workflow_dispatch:
@@ -32,20 +31,21 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      # --- Cache and Install Arduino AVR Core ---
-      - name: Cache Arduino AVR core
-        id: cache-avr-core
+      # --- Cache and Install ESP32 Core ---
+      - name: Cache ESP32 core
+        id: cache-esp32-core
         uses: actions/cache@v3
         with:
-          path: ~/.arduino15/packages/arduino
-          key: avr-core-${{ runner.os }}
+          path: ~/.arduino15/packages/esp32
+          key: esp32-core-${{ runner.os }}
 
-      - name: Install Arduino AVR Core
+      - name: Install ESP32 platform
         # This step runs only if the cache was not found
-        if: steps.cache-avr-core.outputs.cache-hit != 'true'
+        if: steps.cache-esp32-core.outputs.cache-hit != 'true'
         run: |
+          arduino-cli config set board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           arduino-cli core update-index
-          arduino-cli core install arduino:avr
+          arduino-cli core install esp32:esp32
 
       # --- Cache and Install Libraries ---
       - name: Cache Arduino libraries
@@ -55,7 +55,7 @@ jobs:
           path: ~/Arduino/libraries
           # The cache key includes a hash of the dependencies file.
           # The cache will be invalidated and libs re-installed only when this file changes.
-          key: nano-libs-${{ runner.os }}-${{ hashFiles('workflow_test/arduino/library-dependencies.txt') }}
+          key: esp32-libs-${{ runner.os }}-${{ hashFiles('workflow_test/esp32/library-dependencies.txt') }}
 
       - name: Install libraries
         # This step runs only if the cache was not found
@@ -70,21 +70,21 @@ jobs:
             else
               arduino-cli lib install "$lib"
             fi
-          done < workflow_test/arduino/library-dependencies.txt
+          done < workflow_test/esp32/library-dependencies.txt
 
       # --- Compile the Sketch ---
       - name: Compile sketch
         run: |
-          mkdir -p build/nano
+          mkdir -p build/esp32
           arduino-cli compile \
-            --fqbn arduino:avr:nano \
-            workflow_test/arduino/arduino.ino \
-            --output-dir build/nano \
+            --fqbn esp32:esp32:esp32da \
+            workflow_test/esp32/esp32.ino \
+            --output-dir build/esp32 \
             --verbose
 
       # --- Upload Final Binary ---
       - name: Upload Binary Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: nano-binary-${{ inputs.build_name || github.run_number }}
-          path: build/nano
+          name: esp32-binary-${{ inputs.build_name || github.run_number }}
+          path: build/esp32
