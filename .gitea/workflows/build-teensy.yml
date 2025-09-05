@@ -1,0 +1,90 @@
+# This workflow builds an ESP32 sketch using a single-job strategy.
+# It leverages caching for dependencies to speed up subsequent runs.
+name: Build Teensy Sketch
+run-name: Build Teensy Sketch for ${{ github.ref_name }}
+
+on:
+  push:
+    branches:
+      - workflows/teensy
+      - build/teensy
+      - build/test
+  workflow_dispatch:
+    inputs:
+      build_name:
+        description: 'Optional build name or version'
+        required: false
+        default: 'dev-build'
+
+jobs:
+  # ===============================================================
+  # JOB: SETUP, COMPILE, AND UPLOAD
+  # ===============================================================
+  build:
+    runs-on: linux_amd64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      # --- Cache and Install ESP32 Core ---
+      - name: Cache Teensy core
+        id: cache-teensy-core
+        uses: actions/cache@v3
+        with:
+          path: ~/.arduino15/packages/teensy
+          key: teensy-core-${{ runner.os }}
+
+      - name: Install Teensy platform
+        # This step runs only if the cache was not found
+        if: steps.cache-teensy-core.outputs.cache-hit != 'true'
+        run: |
+          arduino-cli config set board_manager.additional_urls https://www.pjrc.com/teensy/package_teensy_index.json
+          arduino-cli core update-index
+          arduino-cli core install teensy:avr
+
+      # --- Cache and Install Libraries ---
+      - name: Cache Arduino libraries
+        id: cache-arduino-libs
+        uses: actions/cache@v3
+        with:
+          path: ~/Arduino/libraries
+          # The cache key includes a hash of the dependencies file.
+          # The cache will be invalidated and libs re-installed only when this file changes.
+          key: teensy-libs-${{ runner.os }}-${{ hashFiles('workflow_test/teensy/library-dependencies.txt') }}
+
+      - name: Install libraries
+        # This step runs only if the cache was not found
+        if: steps.cache-arduino-libs.outputs.cache-hit != 'true'
+        run: |
+          while IFS= read -r lib || [[ -n "$lib" ]]; do
+            # Skip empty lines and comments
+            if [ -z "$lib" ] || [[ "$lib" =~ ^#.* ]]; then continue; fi
+            # Install from Git URL or from Arduino Library Manager
+            if [[ "$lib" =~ ^(https?|git)://.*\.git$ ]]; then
+              arduino-cli lib install --git-url "$lib"
+            else
+              arduino-cli lib install "$lib"
+            fi
+          done < workflow_test/teensy/library-dependencies.txt
+
+      # --- Compile the Sketch ---
+      - name: Compile sketch
+        run: |
+          mkdir -p build/teensy
+          arduino-cli compile \
+            --fqbn teensy:avr:teensy41 \
+            workflow_test/teensy/teensy.ino \
+            --output-dir build/teensy \
+            --verbose
+
+      # --- Upload Final Binary ---
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: teensy-binary-${{ inputs.build_name || github.run_number }}
+          path: build/teensy
