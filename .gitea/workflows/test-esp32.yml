@@ -4,11 +4,12 @@ name: Build ESP32 Sketch (Single Job)
 run-name: Build ESP32 Sketch for ${{ github.ref_name }}
 
 on:
-  push:
+  pull_request:
     branches:
-      - workflows/esp32
-      - build/esp32
-      - build/test
+      - build/all
+    types:
+      - opened
+      - synchronize
   workflow_dispatch:
     inputs:
       build_name:

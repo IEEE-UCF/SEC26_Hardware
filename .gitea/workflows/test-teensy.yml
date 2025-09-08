@@ -1,15 +1,15 @@
-# This workflow builds an Arduino Nano sketch using a single-job strategy.
+# This workflow builds an ESP32 sketch using a single-job strategy.
 # It leverages caching for dependencies to speed up subsequent runs.
-name: Build Arduino Nano Sketch (Single Job)
-run-name: Build Arduino Nano Sketch for ${{ github.ref_name }}
+name: Build Teensy Sketch
+run-name: Build Teensy Sketch for ${{ github.ref_name }}
 
 on:
-  push:
+  pull_request:
     branches:
-      - workflows/esp32
-      - workflows/arduino
-      - build/esp32
-      - build/test
+      - build/all
+    types:
+      - opened
+      - synchronize
   workflow_dispatch:
     inputs:
       build_name:
@@ -32,20 +32,21 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      # --- Cache and Install Arduino AVR Core ---
-      - name: Cache Arduino AVR core
-        id: cache-avr-core
+      # --- Cache and Install ESP32 Core ---
+      - name: Cache Teensy core
+        id: cache-teensy-core
         uses: actions/cache@v3
         with:
-          path: ~/.arduino15/packages/arduino
-          key: avr-core-${{ runner.os }}
+          path: ~/.arduino15/packages/teensy
+          key: teensy-core-${{ runner.os }}
 
-      - name: Install Arduino AVR Core
+      - name: Install Teensy platform
         # This step runs only if the cache was not found
-        if: steps.cache-avr-core.outputs.cache-hit != 'true'
+        if: steps.cache-teensy-core.outputs.cache-hit != 'true'
         run: |
+          arduino-cli config set board_manager.additional_urls https://www.pjrc.com/teensy/package_teensy_index.json
           arduino-cli core update-index
-          arduino-cli core install arduino:avr
+          arduino-cli core install teensy:avr
 
       # --- Cache and Install Libraries ---
       - name: Cache Arduino libraries
@@ -55,7 +56,7 @@ jobs:
           path: ~/Arduino/libraries
           # The cache key includes a hash of the dependencies file.
           # The cache will be invalidated and libs re-installed only when this file changes.
-          key: nano-libs-${{ runner.os }}-${{ hashFiles('workflow_test/arduino/library-dependencies.txt') }}
+          key: teensy-libs-${{ runner.os }}-${{ hashFiles('workflow_test/teensy/library-dependencies.txt') }}
 
       - name: Install libraries
         # This step runs only if the cache was not found
@@ -70,21 +71,21 @@ jobs:
             else
               arduino-cli lib install "$lib"
             fi
-          done < workflow_test/arduino/library-dependencies.txt
+          done < workflow_test/teensy/library-dependencies.txt
 
       # --- Compile the Sketch ---
       - name: Compile sketch
         run: |
-          mkdir -p build/nano
+          mkdir -p build/teensy
           arduino-cli compile \
-            --fqbn arduino:avr:nano \
-            workflow_test/arduino/arduino.ino \
-            --output-dir build/nano \
+            --fqbn teensy:avr:teensy41 \
+            workflow_test/teensy/teensy.ino \
+            --output-dir build/teensy \
             --verbose
 
       # --- Upload Final Binary ---
       - name: Upload Binary Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: nano-binary-${{ inputs.build_name || github.run_number }}
-          path: build/nano
+          name: teensy-binary-${{ inputs.build_name || github.run_number }}
+          path: build/teensy
