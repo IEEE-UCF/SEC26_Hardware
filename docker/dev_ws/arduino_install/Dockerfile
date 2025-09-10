@@ -46,9 +46,8 @@ RUN mkdir -p /home/$USER_NAME/.vscode-server/bin \
 
 # Copy Arduino configuration files from root's home directory to the new user's home directory
 # This command is run as root, so it has the necessary permissions.
-RUN cp -R /root/.arduino15 /home/$USER_NAME/ \
-    && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/.arduino15 \
-    && rm -rf /root/.arduino15
+RUN mv /root/.arduino15 /home/$USER_NAME/ \
+    && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/.arduino15
 
 # Download Linux udev rules for teensy and copy
 RUN mkdir -p /etc/udev/rules.d/ \

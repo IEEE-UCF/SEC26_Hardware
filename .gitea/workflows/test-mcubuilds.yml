@@ -1,0 +1,229 @@
+# This workflow builds an Arduino, Teensy, and ESP32 Sketch.
+name: Build Arduino Nano Sketch (Single Job)
+run-name: Build Arduino Nano Sketch for ${{ github.ref_name }}
+
+on:
+  pull_request:
+    branches:
+      - build/all
+      - main
+    types:
+      - opened
+      - synchronize
+  push:
+    branches:
+      - build/all
+      - main
+  workflow_dispatch:
+    inputs:
+      build_name:
+        description: 'Optional build name or version'
+        required: false
+        default: 'dev-build'
+
+jobs:
+  arduino-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      # --- Cache and Install Arduino AVR Core ---
+      - name: Cache Arduino AVR core
+        id: cache-avr-core
+        uses: actions/cache@v3
+        with:
+          path: ~/.arduino15/packages/arduino
+          key: avr-core-${{ runner.os }}
+
+      - name: Install Arduino AVR Core
+        # This step runs only if the cache was not found
+        if: steps.cache-avr-core.outputs.cache-hit != 'true'
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+      # --- Cache and Install Libraries ---
+      - name: Cache Arduino libraries
+        id: cache-arduino-libs
+        uses: actions/cache@v3
+        with:
+          path: ~/Arduino/libraries
+          # The cache key includes a hash of the dependencies file.
+          # The cache will be invalidated and libs re-installed only when this file changes.
+          key: nano-libs-${{ runner.os }}-${{ hashFiles('workflow_test/arduino/library-dependencies.txt') }}
+
+      - name: Install libraries
+        # This step runs only if the cache was not found
+        if: steps.cache-arduino-libs.outputs.cache-hit != 'true'
+        run: |
+          while IFS= read -r lib || [[ -n "$lib" ]]; do
+            # Skip empty lines and comments
+            if [ -z "$lib" ] || [[ "$lib" =~ ^#.* ]]; then continue; fi
+            # Install from Git URL or from Arduino Library Manager
+            if [[ "$lib" =~ ^(https?|git)://.*\.git$ ]]; then
+              arduino-cli lib install --git-url "$lib"
+            else
+              arduino-cli lib install "$lib"
+            fi
+          done < workflow_test/arduino/library-dependencies.txt
+
+      # --- Compile the Sketch ---
+      - name: Compile sketch
+        run: |
+          mkdir -p build/nano
+          arduino-cli compile \
+            --fqbn arduino:avr:nano \
+            workflow_test/arduino/arduino.ino \
+            --output-dir build/nano \
+            --verbose
+
+      # --- Upload Final Binary ---
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nano-binary-${{ inputs.build_name || github.run_number }}
+          path: build/nano
+  
+  esp32-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      # --- Cache and Install ESP32 Core ---
+      - name: Cache ESP32 core
+        id: cache-esp32-core
+        uses: actions/cache@v3
+        with:
+          path: ~/.arduino15/packages/esp32
+          key: esp32-core-${{ runner.os }}
+
+      - name: Install ESP32 platform
+        # This step runs only if the cache was not found
+        if: steps.cache-esp32-core.outputs.cache-hit != 'true'
+        run: |
+          arduino-cli config set board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      # --- Cache and Install Libraries ---
+      - name: Cache Arduino libraries
+        id: cache-arduino-libs
+        uses: actions/cache@v3
+        with:
+          path: ~/Arduino/libraries
+          # The cache key includes a hash of the dependencies file.
+          # The cache will be invalidated and libs re-installed only when this file changes.
+          key: esp32-libs-${{ runner.os }}-${{ hashFiles('workflow_test/esp32/library-dependencies.txt') }}
+
+      - name: Install libraries
+        # This step runs only if the cache was not found
+        if: steps.cache-arduino-libs.outputs.cache-hit != 'true'
+        run: |
+          while IFS= read -r lib || [[ -n "$lib" ]]; do
+            # Skip empty lines and comments
+            if [ -z "$lib" ] || [[ "$lib" =~ ^#.* ]]; then continue; fi
+            # Install from Git URL or from Arduino Library Manager
+            if [[ "$lib" =~ ^(https?|git)://.*\.git$ ]]; then
+              arduino-cli lib install --git-url "$lib"
+            else
+              arduino-cli lib install "$lib"
+            fi
+          done < workflow_test/esp32/library-dependencies.txt
+
+      # --- Compile the Sketch ---
+      - name: Compile sketch
+        run: |
+          mkdir -p build/esp32
+          arduino-cli compile \
+            --fqbn esp32:esp32:esp32da \
+            workflow_test/esp32/esp32.ino \
+            --output-dir build/esp32 \
+            --verbose
+
+      # --- Upload Final Binary ---
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: esp32-binary-${{ inputs.build_name || github.run_number }}
+          path: build/esp32
+          
+  teensy-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      # --- Cache and Install ESP32 Core ---
+      - name: Cache Teensy core
+        id: cache-teensy-core
+        uses: actions/cache@v3
+        with:
+          path: ~/.arduino15/packages/teensy
+          key: teensy-core-${{ runner.os }}
+
+      - name: Install Teensy platform
+        # This step runs only if the cache was not found
+        if: steps.cache-teensy-core.outputs.cache-hit != 'true'
+        run: |
+          arduino-cli config set board_manager.additional_urls https://www.pjrc.com/teensy/package_teensy_index.json
+          arduino-cli core update-index
+          arduino-cli core install teensy:avr
+
+      # --- Cache and Install Libraries ---
+      - name: Cache Arduino libraries
+        id: cache-arduino-libs
+        uses: actions/cache@v3
+        with:
+          path: ~/Arduino/libraries
+          # The cache key includes a hash of the dependencies file.
+          # The cache will be invalidated and libs re-installed only when this file changes.
+          key: teensy-libs-${{ runner.os }}-${{ hashFiles('workflow_test/teensy/library-dependencies.txt') }}
+
+      - name: Install libraries
+        # This step runs only if the cache was not found
+        if: steps.cache-arduino-libs.outputs.cache-hit != 'true'
+        run: |
+          while IFS= read -r lib || [[ -n "$lib" ]]; do
+            # Skip empty lines and comments
+            if [ -z "$lib" ] || [[ "$lib" =~ ^#.* ]]; then continue; fi
+            # Install from Git URL or from Arduino Library Manager
+            if [[ "$lib" =~ ^(https?|git)://.*\.git$ ]]; then
+              arduino-cli lib install --git-url "$lib"
+            else
+              arduino-cli lib install "$lib"
+            fi
+          done < workflow_test/teensy/library-dependencies.txt
+
+      # --- Compile the Sketch ---
+      - name: Compile sketch
+        run: |
+          mkdir -p build/teensy
+          arduino-cli compile \
+            --fqbn teensy:avr:teensy41 \
+            workflow_test/teensy/teensy.ino \
+            --output-dir build/teensy \
+            --verbose
+
+      # --- Upload Final Binary ---
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: teensy-binary-${{ inputs.build_name || github.run_number }}
+          path: build/teensy

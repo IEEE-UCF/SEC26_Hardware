@@ -8,7 +8,7 @@ jobs:
     # Use a strategy matrix to run the same job for different architectures
     strategy:
       matrix:
-        platform: [linux-amd64, linux-arm64, linux-riscv64]
+        platform: [linux-amd64, linux-arm64]
 
     # The 'runs-on' label must match one of the labels you gave your runner
     runs-on: ${{ matrix.platform }}
