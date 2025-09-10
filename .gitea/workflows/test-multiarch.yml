@@ -1,0 +1,21 @@
+name: Multi-Arch Build Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-architectures:
+    # Use a strategy matrix to run the same job for different architectures
+    strategy:
+      matrix:
+        platform: [linux-amd64, linux-arm64, linux-riscv64]
+
+    # The 'runs-on' label must match one of the labels you gave your runner
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Identify Architecture
+        run: |
+          echo "Hello from a container on Gitea Actions!"
+          echo "This job is running on the '${{ matrix.platform }}' platform."
+          echo "The kernel identifies the architecture as: $(uname -m)"
