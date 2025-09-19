@@ -21,7 +21,11 @@ We will also be having a quick brainstorm session at the meeting. Attached are t
 # SECbot Meeting 2.0
 
 Date: September 9/19, 5:00PM, Room TBA (released 30+ minutes before)
--# The meeting will start on time.
+
+
+The meeting will start on time.
+
+## Go over previous meeting information (5m)
 
 ## Housekeeping (3m)
 
@@ -36,6 +40,22 @@ Date: September 9/19, 5:00PM, Room TBA (released 30+ minutes before)
 * Robot, Drone V1 competition-ready by first week of March
 * Conference is third week of March
 
+### Old Business
+
+* JST Crimper
+
+* Field
+  
+  * Build (Done by Sunday)
+  
+  * Buy all parts (On Monday)
+  
+  * Code
+
+### New Business
+
+None
+
 ## Team Leads (30m)
 
 * Review current team configuration (2m):
@@ -45,8 +65,13 @@ Date: September 9/19, 5:00PM, Room TBA (released 30+ minutes before)
   - Aldem: overall PM, DevOps Lead
   - Rafeed: software PM, MCU, ROS2 Lead
   - open: Mechanical Lead
+    - Matt (gave speech)
+    - Antonio (gave speech)
   - open: Drone Lead
+    - Kevin (did not give speech)
   - open: Electrical Lead
+    - Tino (accepted, guaranteed)
+    
     -# Note: Tino Hernandez will be given Electrical Lead role if they accept their nomination
 * New team lead responsibilities (2m):
   - Lead efforts for the team
@@ -64,12 +89,10 @@ Date: September 9/19, 5:00PM, Room TBA (released 30+ minutes before)
   - **ABSENTEE NOMINATION**: You must meet up with Aldem to record this speech. Aldem will listen to your speech ONLY one time at this meeting. You will be given ONE take. You may give an absentee speech even if you are present at the meeting.
   - A decision will be made after the meeting. The results will be posted within 24 hours.
 
-## Brainstorming (25m)
+## Brainstorming (40m)
 
-- Quickly review rules (7m)
+- Quickly review rules (15m)
 - We will be brainstorming ideas for our robot and drone.
 - The rules can be found [here](https://gitea.syndric.org/ieeeucf/SEC26_Hardware/media/branch/doc/wiki/doc/official-hardware/2026%20IEEE+SoutheastCon+Hardware+Competition+Ruleset_8_15_2025.docx). Attached below is another copy for your convenience.
-  -# Yes, I know these rules are kind of mid. DM me any concerns you may have
+  - Yes, I know these rules are kind of mid. DM me any concerns you may have
 - Brainstorm activity is TBA
-
-
