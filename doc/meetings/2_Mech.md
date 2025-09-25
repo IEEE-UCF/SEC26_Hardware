@@ -31,8 +31,6 @@
 
 * Pressure plate
 
-
-
 * Duckies
   
   * Passive mechanism with rubber bands or compliant wheels go brr
@@ -58,8 +56,11 @@
 * Drone
   
   * Combine the drone and crater robot into one?
-    
 
 Add everyone to Fusion team (5m)
+
+### New business
+
+* Install Fusion 360 (everyone)
 
 # 

@@ -22,7 +22,6 @@ We will also be having a quick brainstorm session at the meeting. Attached are t
 
 Date: September 9/19, 5:00PM, Room TBA (released 30+ minutes before)
 
-
 The meeting will start on time.
 
 ## Go over previous meeting information (5m)
@@ -46,9 +45,9 @@ The meeting will start on time.
 
 * Field
   
-  * Build (Done by Sunday)
+  * Build
   
-  * Buy all parts (On Monday)
+  * Buy all parts
   
   * Code
 
@@ -59,31 +58,46 @@ None
 ## Team Leads (30m)
 
 * Review current team configuration (2m):
+  
   - Aldem: overall PM, Mechanical, Electrical, Drone, DevOps Lead
   - Rafeed: software PM, MCU, ROS2 Lead
+
 * New team configuration (3m):
+  
   - Aldem: overall PM, DevOps Lead
+  
   - Rafeed: software PM, MCU, ROS2 Lead
+  
   - open: Mechanical Lead
+    
     - Matt (gave speech)
     - Antonio (gave speech)
+  
   - open: Drone Lead
+    
     - Kevin (did not give speech)
+  
   - open: Electrical Lead
+    
     - Tino (accepted, guaranteed)
     
     -# Note: Tino Hernandez will be given Electrical Lead role if they accept their nomination
+
 * New team lead responsibilities (2m):
+  
   - Lead efforts for the team
   - Create workshop documents
   - At the moment, while this is a high-commitment role, this is not meant to be binding. Do not feel bad for resigning if you find a better opportunity.
   - Aldem will stay PM for these teams until further notice.
+
 * Nomination procedure (7m)
+  
   - 120 seconds long for each role (timed)
   - Self-nomination or external nomination is acceptable
   - Both physical and absent nominees are valid
   - Nominees must be registered on Gitea at the time of nomination 
 - Speech (15m)
+  
   - Can decline to speak,
   - 90 seconds maximum (timed),
   - **ABSENTEE NOMINATION**: You must meet up with Aldem to record this speech. Aldem will listen to your speech ONLY one time at this meeting. You will be given ONE take. You may give an absentee speech even if you are present at the meeting.
