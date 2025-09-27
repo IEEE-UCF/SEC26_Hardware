@@ -1,30 +1,53 @@
-# 3_General Meeting
+# General Meeting 3
 
-9/6/25, 5:00 PM
-Start time:
+9/26/25, 5:00 PM
+Start time: 5:02
 
 ### Recap last meeting
 
 * Nominated leads
   * Introduce new leads
   * Another drone lead nomination session
+    * Drone
+      * Adi (declines to speak)
 * Brainstormed ideas for the robot
 
 ### Old business
 
-* JST Crimper
-  * Get interst
-  * Schedule meeting time
-* Field
+  * JST Crimper
+    * Get interst
+    * Schedule meeting time (deferred)
+      * Antonio
+      * Ivan
+        Alex
+        Sadler 
+        Connor
+        Aidan
+        Imani
+        Li
+        Anh
+* Field 
   * Build
-    * Schedule meeting time
-    * Invite-only
+    * Schedule meeting time (based on Tino's availability) (deffered)
   * Buy all parts
-    * Schedule meeting time with Yousef
+    * Schedule meeting time with Yousef (deffered)
     * Aldem, Yousef
   * Code
     * Public meeting
-    * Schedule meeting time
+      * Antonio
+      * Sam
+      * Kenny
+      * Ivan
+      * Connor 
+      * Kevin
+      * Li
+      * Ben
+      * Abdul
+    * Schedule meeting time (deffered, when2meet)
+
+Fusion invites
+* Connor nid
+* Kaysha kaysha098@gmail.com
 
 ### New business
 
@@ -44,17 +67,16 @@ Start time:
 
 * Need to buy:
   
-  * more chairs holy crap lol
-  
+  * more chairs holy crap lol (cyring rn)
+    * no one has spraes, need to buy
   * projector, currently renting
+    * need to buy
 
 ### Open time
 
 * Let's get people added in mechanical, software, etc based on action items from last meeting
 
 End time:
-
-
 
 # Post Meeting 2 Discord Message
 
