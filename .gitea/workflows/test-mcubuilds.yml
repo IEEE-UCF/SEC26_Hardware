@@ -3,17 +3,6 @@ name: Build Arduino Nano Sketch (Single Job)
 run-name: Build Arduino Nano Sketch for ${{ github.ref_name }}
 
 on:
-  pull_request:
-    branches:
-      - build/all
-      - main
-    types:
-      - opened
-      - synchronize
-  push:
-    branches:
-      - build/all
-      - main
   workflow_dispatch:
     inputs:
       build_name:
