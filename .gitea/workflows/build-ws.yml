@@ -12,7 +12,6 @@ on:
       - synchronize
   push:
     branches:
-      - workflows/**
       - main
       - build/all
   workflow_dispatch: # Allow to trigger from UI
@@ -20,6 +19,7 @@ on:
 jobs:
   docker-health-check:
     name: Docker Health Check
+    if: "!startsWith(github.head_ref, 'doc')"
     runs-on: [ubuntu-latest, linux-amd64]
     steps:
       - name: Checkout code
@@ -50,6 +50,7 @@ jobs:
           tags: ${{ vars.REGISTRY_URL_PORT }}/healthcheck:${{ github.sha }}
 
   build-and-push:
+    name: Build and Push Workspace Docker Image
     needs: docker-health-check
     if: "!startsWith(github.head_ref, 'doc')"
     runs-on: [ubuntu-latest, linux-amd64]

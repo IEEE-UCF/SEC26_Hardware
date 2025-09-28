@@ -1,0 +1,24 @@
+name: Conventional Commit Linter
+
+on: [pull_request]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # We must fetch the full history to compare commits in the PR
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install commitlint
+        run: npm install @commitlint/cli @commitlint/config-conventional
+
+      - name: Validate all commits in PR
+        # This command checks all commits from the base of the PR to the head.
+        run: npx commitlint --from ${{ gitea.event.pull_request.base.sha }} --to ${{ gitea.event.pull_request.head.sha }} --verbose

@@ -24,6 +24,7 @@ on:
 jobs:
   arduino-build:
     runs-on: ubuntu-latest
+    if: "!startsWith(github.head_ref, 'doc')"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -92,6 +93,7 @@ jobs:
   
   esp32-build:
     runs-on: ubuntu-latest
+    if: "!startsWith(github.head_ref, 'doc')"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -161,6 +163,7 @@ jobs:
           
   teensy-build:
     runs-on: ubuntu-latest
+    if: "!startsWith(github.head_ref, 'doc')"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
