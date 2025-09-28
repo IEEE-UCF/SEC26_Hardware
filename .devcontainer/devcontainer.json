@@ -3,22 +3,28 @@
 	// Configure Dockerfile location and build arguments.
 	"build": {
 		"dockerfile": "../docker/dev_ws/Dockerfile", // Path updated as requested
-		"context": "..",
+		"context": ".."
 	},
 	// Set environment variables for the container. This is a cleaner way than setting them in the Dockerfile.
 	"containerEnv": {
-		"ARDUINO_DIRECTORIES_USER": "/home/rosdev/.arduino15",
+		"ARDUINO_DIRECTORIES_USER": "/home/rosdev/.arduino15"
 	},
-	// Set post startup behavior to do nothing
-	"postStartCommand": "chmod +x scripts/install-dependencies.sh && scripts/install-dependencies.sh",
+	// Run install script on post-start without attempting to chmod (may fail on mounted filesystems)
+	"postStartCommand": "bash -eux scripts/install-dependencies.sh",
 	// Set the user the container will run as.
 	"remoteUser": "rosdev",
 	// Arguments passed to 'docker run'.
 	"runArgs": [
-		"--privileged", // Required for accessing hardware devices like Teensy/ESP32.
-		"--net=host",   // Use host networking for easier ROS 2 communication.
+		// Keep /dev and privileged so serial/USB hardware works inside container.
+		"--privileged",
 		"-v",
-		"/dev:/dev" // Mount host's /dev directory to access serial ports.
+		"/dev:/dev",
+		// On Docker Desktop for Windows, X11 forwarding should use host.docker.internal
+		// and expose an X server on the host (e.g. VcXsrv, Xming, or WSLg). We don't use --net=host here.
+		"-e",
+		"DISPLAY=host.docker.internal:0",
+		"-e",
+		"QT_X11_NO_MITSHM=1"
 	],
 	// Configure VS Code settings>r and extensions.
 	"customizations": {
@@ -46,7 +52,8 @@
 					"/home/rosdev/.arduino15/packages/**/cores/**",
 					"/home/rosdev/.arduino15/packages/**/variants/**",
 					"/home/rosdev/.arduino15/packages/**/libraries/**/src/**",
-					"/home/rosdev/.arduino15/packages/**/tools/**/include/**"
+					"/home/rosdev/.arduino15/packages/**/tools/**/include/**",
+					"home/rosdev/Arduino/libraries/**/src/**"
 				],
 				"C_Cpp.default.defines": [],
 				// ROS extension settings
@@ -55,6 +62,12 @@
 				"arduino.useArduinoCli": true,
 				"arduino.commandPath": "arduino-cli",
 				"arduino.path": "/usr/local/bin",
+				// Helpful defaults for GUI apps that use Qt/X11
+				"terminal.integrated.env.linux": {
+					"DISPLAY": "host.docker.internal:0",
+					"QT_QPA_PLATFORM": "xcb",
+					"QT_X11_NO_MITSHM": "1"
+				}
 				/*"arduino.additionalUrls": [
 					"https://www.pjrc.com/teensy/package_teensy_index.json",
 					"https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json"

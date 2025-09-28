@@ -26,6 +26,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     nano \
     yq \
+    # Qt/X11 runtime dependencies commonly required by Gazebo/Qt apps (xcb plugin deps)
+    libxcb1 \
+    libx11-xcb1 \
+    libxcb-glx0 \
+    libxcb-xinerama0 \
+    libxkbcommon-x11-0 \
+    libxcb-icccm4 \
+    libxcb-image0 \
+    libxcb-keysyms1 \
+    libxcb-randr0 \
+    libxcb-render-util0 \
     # Download and install cloudflared
     && wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -O cloudflared.deb \
     && apt-get install -y ./cloudflared.deb \
@@ -105,8 +116,28 @@ RUN echo "" >> /home/$USER_NAME/.bashrc && \
     echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USER_NAME/.bashrc && \
     echo "source /home/$USER_NAME/ros2_workspaces/install/setup.bash" >> /home/$USER_NAME/.bashrc
 
-# Verify installation
+# Verify Arduino CLI installation (run as the non-root user)
 RUN arduino-cli version && arduino-cli core list
+
+# Switch to root to install Gazebo Harmonic and required tools, then switch back
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    lsb-release \
+    gnupg \
+    ca-certificates && \
+    # Fetch and install OSRF package signing key
+    curl -fsSL https://packages.osrfoundation.org/gazebo.gpg -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
+    # Add Gazebo (OSRF) apt repository for the current distro
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
+    apt-get update && \
+    # Install Gazebo harmonic and needed Qt/X11/XCB/OpenGL libs to support GUI
+    apt-get install -y --no-install-recommends \
+    gz-harmonic && \
+    # Cleanup apt caches
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+USER $USER_NAME
     
 # Source ROS 2 entrypoint
 CMD ["/ros_entrypoint.sh", "bash"]

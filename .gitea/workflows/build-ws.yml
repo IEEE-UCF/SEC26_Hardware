@@ -85,7 +85,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker/dev_ws/arduino_install/Dockerfile  # Path to your Dockerfile
+          file: ./docker/dev_ws/Dockerfile  # Path to your Dockerfile
           push: true
           tags: |
             ${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:latest
