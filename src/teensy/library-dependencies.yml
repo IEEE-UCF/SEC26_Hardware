@@ -1,0 +1,8 @@
+# A list of required Arduino libraries.
+dependencies:
+  - name: VL53L1X
+    version: 1.0.7
+    notes: Time-of-flight sensor library.
+
+  - name: ArduinoJson
+    source: https://github.com/bblanchon/ArduinoJson.git
