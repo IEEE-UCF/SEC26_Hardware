@@ -38,7 +38,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxcb-randr0 \
     libxcb-render-util0 \
     # Download and install cloudflared
-    && wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -O cloudflared.deb \
+    && CLOUDFLARED_ARCH=$(dpkg --print-architecture | sed 's/amd64/amd64/g; s/arm64/arm64/g') \
+    && wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${CLOUDFLARED_ARCH}.deb -O cloudflared.deb \
     && apt-get install -y ./cloudflared.deb \
     && rm cloudflared.deb \
     # --- Cleanup ---
