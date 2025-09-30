@@ -68,6 +68,7 @@ ENV ARDUINO_DIRECTORIES_USER=/home/$USER_NAME/.arduino15
 
 # Initialize and configure arduino-cli, and install board cores in a single layer
 RUN arduino-cli config init && \
+    arduino-cli config set network.connection_timeout 1200s && \
     arduino-cli config set board_manager.additional_urls https://www.pjrc.com/teensy/package_teensy_index.json https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json && \
     arduino-cli core update-index && \
     arduino-cli core install teensy:avr && \
@@ -92,16 +93,26 @@ RUN TEENSY_PLATFORM_PATH=$(find $ARDUINO_DIRECTORIES_USER/packages/teensy/hardwa
 
 RUN mkdir -p /home/$USER_NAME/ros2_workspaces
 
-# Build micro-ROS setup tools inside the dedicated workspace directory
-RUN /bin/bash -c ". /opt/ros/$ROS_DISTRO/setup.bash && \
-    cd /home/$USER_NAME/ros2_workspaces && \
-    git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup && \
-    sudo apt-get update && \
+USER root
+WORKDIR /home/$USER_NAME/ros2_workspaces
+
+RUN git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup && \
+    /bin/bash -c ". /opt/ros/$ROS_DISTRO/setup.bash && \
+    apt-get update && \
     rosdep update && \
     rosdep install --from-paths src --ignore-src -y && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*"
+
+RUN chown -R $USER_NAME:$USER_GID /home/$USER_NAME/ros2_workspaces
+
+USER $USER_NAME
+
+RUN /bin/bash -c ". /opt/ros/$ROS_DISTRO/setup.bash && rosdep update"
+
+RUN /bin/bash -c ". /opt/ros/$ROS_DISTRO/setup.bash && \
+    cd /home/$USER_NAME/ros2_workspaces && \
     colcon build && \
-    rm -rf build log && \
-    sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*"
+    rm -rf build log"
 
 # Build micro-ROS agent inside the dedicated workspace directory
 RUN /bin/bash -c ". /opt/ros/$ROS_DISTRO/setup.bash && \
