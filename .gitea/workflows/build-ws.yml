@@ -56,15 +56,13 @@ jobs:
     if: "!startsWith(github.head_ref, 'doc')"
     runs-on: [ubuntu-latest, linux-amd64]
 
-    # Add a strategy to build platforms sequentially
     strategy:
-      fail-fast: false # Allows all builds to finish even if one fails
+      fail-fast: false
       matrix:
         platform:
           - linux/amd64
           - linux/arm64
 
-    # Setup perms for Gitea's package registry
     permissions:
       contents: read
       packages: write
@@ -76,7 +74,7 @@ jobs:
       - name: Sanitize branch name for Docker tag
         id: sanitize
         run: |
-          BRANCH_SLUG=$(echo "${{ github.head_ref || github.ref_name }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
+          BRANCH_SLUG=$(echo "${{ github.head_ref || github.ref_name }}" | sed 's/[^a-zA-Z0.9.-]/-/g')
           echo "BRANCH_SLUG=${BRANCH_SLUG}" >> $GITHUB_ENV
       
       - name: Set up Docker Buildx
@@ -89,19 +87,24 @@ jobs:
           username: ${{ vars.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
+      - name: Sanitize platform string for tag
+        id: sanitize_platform
+        run: |
+          echo "slug=$(echo ${{ matrix.platform }} | sed 's/\//-/g')" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./docker/dev_ws/Dockerfile
           push: true
-          # Build only one platform at a time from the matrix
           platforms: ${{ matrix.platform }}
           tags: |
             ${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:latest
             ${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:${{ github.sha }}
-          # Update cache refs to be platform-specific to avoid conflicts
+          
+          # The sanitized slug MUST remain here to keep caches separate.
           cache-from: |
-            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}-${{ matrix.platform }}
-            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-main-${{ matrix.platform }}
-          cache-to: type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}-${{ matrix.platform }},mode=max
+            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}-${{ steps.sanitize_platform.outputs.slug }}
+            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-main-${{ steps.sanitize_platform.outputs.slug }}
+          cache-to: type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}-${{ steps.sanitize_platform.outputs.slug }},mode=max
