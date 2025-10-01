@@ -47,15 +47,22 @@ jobs:
           context: .
           file: ./Dockerfile.healthcheck
           push: true
+          platforms: linux/amd64, linux/arm64
           tags: ${{ vars.REGISTRY_URL_PORT }}/healthcheck:${{ github.sha }}
 
   build-and-push:
-    name: Build and Push Workspace Docker Image
+    name: Build & Push for ${{ matrix.platform }}
     needs: docker-health-check
     if: "!startsWith(github.head_ref, 'doc')"
     runs-on: [ubuntu-latest, linux-amd64]
 
-    # Setup perms for Gitea's package registry
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+
     permissions:
       contents: read
       packages: write
@@ -63,12 +70,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      # Sanitize docker tags        
+
       - name: Sanitize branch name for Docker tag
         id: sanitize
         run: |
-          # Replaces any character that is not a letter, number, '.', or '-' with a '-'
-          BRANCH_SLUG=$(echo "${{ github.head_ref || github.ref_name }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
+          BRANCH_SLUG=$(echo "${{ github.head_ref || github.ref_name }}" | sed 's/[^a-zA-Z0.9.-]/-/g')
           echo "BRANCH_SLUG=${BRANCH_SLUG}" >> $GITHUB_ENV
       
       - name: Set up Docker Buildx
@@ -81,22 +87,24 @@ jobs:
           username: ${{ vars.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
+      - name: Sanitize platform string for tag
+        id: sanitize_platform
+        run: |
+          echo "slug=$(echo ${{ matrix.platform }} | sed 's/\//-/g')" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
-        # This action builds the Docker image from your Dockerfile and pushes it to the registry.
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker/dev_ws/Dockerfile  # Path to your Dockerfile
+          file: ./docker/dev_ws/Dockerfile
           push: true
+          platforms: ${{ matrix.platform }}
           tags: |
             ${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:latest
             ${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:${{ github.sha }}
-          # Caching strategy:
-          # - cache-from: Tries to pull cache first from a branch-specific layer, then falls back to the main branch cache.
-          #   This prevents cache conflicts between PRs while sharing a common base.
-          # - cache-to: Pushes the cache layers only to a branch-specific tag, ensuring PRs don't overwrite each other's cache.
-          #   The 'mode=max' ensures all layers are written for the most effective caching.
+          
+          # The sanitized slug MUST remain here to keep caches separate.
           cache-from: |
-            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}
-            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-main
-          cache-to: type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }},mode=max
+            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}-${{ steps.sanitize_platform.outputs.slug }}
+            type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-main-${{ steps.sanitize_platform.outputs.slug }}
+          cache-to: type=registry,ref=${{ vars.REGISTRY_URL_PORT }}/syndric/ws-arduino-ros:cache-${{ env.BRANCH_SLUG }}-${{ steps.sanitize_platform.outputs.slug }},mode=max
