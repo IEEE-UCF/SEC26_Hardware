@@ -24,11 +24,15 @@ Start time: 5:00
 	* 60s max speech must be given
 * Sort old robot parts
 	* Schedule time (Antonio, Aldem)
+	* Alex Ivan Ben Kevin Jonathan Sergio Zac
 * Buy field parts
+	* Private
 * Field build time
 	* Schedule time ??
+	* Private
 * JST Crimper
 	* Schedule time (Tino)
+	* Deferred for like a month
 ## Running the Dev Workspace (10m)
 * Should be pretty quick, the idea is to build the workspaces as we talk about the next topic
 ## MCU and ROS2 for robots
@@ -50,5 +54,7 @@ Start time: 5:00
 * Example Stack (10m)
 * Conclusion
 
-End time:
+Rewrite field code: Sergio Sam Jonathan
+
+End time: 5:58
 
