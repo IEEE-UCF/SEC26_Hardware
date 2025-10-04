@@ -149,6 +149,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Cleanup apt caches
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install whatever else is needed as root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git-lfs && \
+    git lfs install && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 USER $USER_NAME
     
 # Source ROS 2 entrypoint
