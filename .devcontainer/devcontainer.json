@@ -1,93 +1,66 @@
 {
-	"name": "ROS 2 Jazzy & micro-ROS Dev",
-	// Configure Dockerfile location and build arguments.
-	"build": {
-		"dockerfile": "../docker/dev_ws/Dockerfile", // Path updated as requested
-		"context": ".."
-	},
-	// Set environment variables for the container. This is a cleaner way than setting them in the Dockerfile.
-	"containerEnv": {
-		"ARDUINO_DIRECTORIES_USER": "/home/rosdev/.arduino15"
-	},
-	// Run install script on post-start without attempting to chmod (may fail on mounted filesystems)
-	"postStartCommand": "bash -eux scripts/install-dependencies.sh",
-	// Set the user the container will run as.
-	"remoteUser": "rosdev",
-	// Arguments passed to 'docker run'.
-	"runArgs": [
-		// Keep /dev and privileged so serial/USB hardware works inside container.
-		"--privileged",
-		"-v",
-		"/dev:/dev",
-		// On Docker Desktop for Windows, X11 forwarding should use host.docker.internal
-		// and expose an X server on the host (e.g. VcXsrv, Xming, or WSLg). We don't use --net=host here.
-		"-e",
-		"DISPLAY=host.docker.internal:0",
-		"-e",
-		"QT_X11_NO_MITSHM=1"
-	],
-	// Configure VS Code settings>r and extensions.
-	"customizations": {
-		"vscode": {
-			"settings": {
-				// Set the default shell to bash to ensure .bashrc sourcing.
-				"terminal.integrated.defaultProfile.linux": "bash",
-				"terminal.integrated.profiles.linux": {
-					"bash": {
-						"path": "/bin/bash",
-						"args": [
-							"-l"
-						]
-					}
-				},
-				"python.defaultInterpreterPath": "/usr/bin/python3",
-				// C/C++ extension settings moved from Dockerfile for better management.
-				"C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
-				"C_Cpp.default.compilerPath": "/usr/bin/gcc",
-				"C_Cpp.default.cStandard": "c17",
-				"C_Cpp.default.cppStandard": "c++17",
-				"C_Cpp.default.includePath": [
-					"${workspaceFolder}/**",
-					"/opt/ros/jazzy/include/**",
-					"/home/rosdev/.arduino15/packages/**/cores/**",
-					"/home/rosdev/.arduino15/packages/**/variants/**",
-					"/home/rosdev/.arduino15/packages/**/libraries/**/src/**",
-					"/home/rosdev/.arduino15/packages/**/tools/**/include/**",
-					"home/rosdev/Arduino/libraries/**/src/**"
-				],
-				"C_Cpp.default.defines": [],
-				// ROS extension settings
-				"ros.distro": "jazzy",
-				// Arduino extension settings
-				"arduino.useArduinoCli": true,
-				"arduino.commandPath": "arduino-cli",
-				"arduino.path": "/usr/local/bin",
-				// Helpful defaults for GUI apps that use Qt/X11
-				"terminal.integrated.env.linux": {
-					"DISPLAY": "host.docker.internal:0",
-					"QT_QPA_PLATFORM": "xcb",
-					"QT_X11_NO_MITSHM": "1"
-				}
-				/*"arduino.additionalUrls": [
-					"https://www.pjrc.com/teensy/package_teensy_index.json",
-					"https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json"
-				]*/
-			},
-			// A list of recommended extensions for this development environment.
-			"extensions": [
-				"ms-vscode.cpptools",
-				"ms-python.python",
-				"vsciot-vscode.vscode-arduino",
-				"twxs.cmake",
-				"redhat.vscode-yaml",
-				"eamodio.gitlens",
-				"ranch-hand-robotics.rde-pack",
-				"davidanson.vscode-markdownlint",
-				"me-dutour-mathieu.vscode-github-actions"
-			]
-		}
-	},
-  "workspaceFolder": "/home/rosdev/ros2_workspaces/${localWorkspaceFolderBasename}",
-	"workspaceMount": "source=${localWorkspaceFolder},target=/home/rosdev/ros2_workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached"
+    "name": "ROS 2 Jazzy & micro-ROS Dev (Universal)",
+    // Use Docker Compose to build and run the container.
+    // CORRECTED PATH: Path is relative to this file's location (.devcontainer).
+    "dockerComposeFile": "../docker/dev_ws/docker-compose.yml",
+    // The service within the docker-compose.yml file to use.
+    "service": "devcontainer",
+    // The workspace folder inside the container.
+    "workspaceFolder": "/home/rosdev/ros2_workspaces/sec26_hardware"
+    // This command runs ON THE HOST from the project root. This path is correct.
+    "initializeCommand": "bash ./docker/dev_ws/scripts/initialize-env.sh",
+    // Set the user the container will run as.
+    "remoteUser": "rosdev",
+    // Run install script on post-start. Path is relative to workspaceFolder inside the container.
+    // CORRECTED PATH: The path needs to point to where the script is inside the mounted project volume.
+    "postStartCommand": "bash -eux ./docker/dev_ws/scripts/install-dependencies.sh",
+    // The rest of the configuration remains the same.
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash",
+                        "args": [
+                            "-l"
+                        ]
+                    }
+                },
+                "python.defaultInterpreterPath": "/usr/bin/python3",
+                "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
+                "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+                "C_Cpp.default.cStandard": "c17",
+                "C_Cpp.default.cppStandard": "c++17",
+                "C_Cpp.default.includePath": [
+                    "${workspaceFolder}/**",
+                    "/opt/ros/jazzy/include/**",
+                    "/home/rosdev/.arduino15/packages/**/cores/**",
+                    "/home/rosdev/.arduino15/packages/**/variants/**",
+                    "/home/rosdev/.arduino15/packages/**/libraries/**/src/**",
+                    "/home/rosdev/.arduino15/packages/**/tools/**/include/**",
+                    "home/rosdev/Arduino/libraries/**/src/**"
+                ],
+                "ros.distro": "jazzy",
+                "arduino.useArduinoCli": true,
+                "arduino.commandPath": "arduino-cli",
+                "arduino.path": "/usr/local/bin",
+                "terminal.integrated.env.linux": {
+                    "QT_QPA_PLATFORM": "xcb",
+                    "QT_X11_NO_MITSHM": "1"
+                }
+            },
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-python.python",
+                "vsciot-vscode.vscode-arduino",
+                "twxs.cmake",
+                "redhat.vscode-yaml",
+                "eamodio.gitlens",
+                "ranch-hand-robotics.rde-pack",
+                "davidanson.vscode-markdownlint",
+                "me-dutour-mathieu.vscode-github-actions"
+            ]
+        }
+    }
 }
-

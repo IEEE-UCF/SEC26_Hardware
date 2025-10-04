@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  devcontainer:
+    build:
+      # CORRECTED CONTEXT: The context should be the project root so the Dockerfile can access all files.
+      # '..' goes up from dev_ws to docker, '../../' goes up to the project root.
+      context: ../..
+      # CORRECTED DOCKERFILE PATH: This path is now relative to the new context (the project root).
+      dockerfile: docker/dev_ws/Dockerfile
+    environment:
+      # Pass the DISPLAY variable from the .env file into the container
+      - DISPLAY=${DISPLAY_CONFIG}
+      - QT_X11_NO_MITSHM=1
+      - ARDUINO_DIRECTORIES_USER=/home/rosdev/.arduino15
+    volumes:
+      # Mount device access and X11 socket (for Linux)
+      - ../../:/home/rosdev/ros2_workspaces/sec26_hardware:cached
+      - /dev:/dev
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    # This uses the network mode from the .env file (either 'host' for Linux or 'bridge' for Win/Mac)
+    network_mode: ${NETWORK_MODE_CONFIG}
+    privileged: true
+    # Keep the container running
+    command: sleep infinity

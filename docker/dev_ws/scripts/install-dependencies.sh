@@ -11,7 +11,7 @@ set -euo pipefail
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Define the path to the dependencies file.
-DEPS_FILE="$SCRIPT_DIR/../src/teensy/library-dependencies.yml"
+DEPS_FILE="$SCRIPT_DIR/../../../src/teensy/library-dependencies.yml"
 
 # --- Pre-flight checks ---
 command -v yq >/dev/null 2>&1 || { echo "❌ 'yq' is required but not installed. Install it and retry." >&2; exit 1; }
