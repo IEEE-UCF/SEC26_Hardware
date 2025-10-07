@@ -73,7 +73,7 @@ RUN arduino-cli config init && \
     arduino-cli core update-index && \
     arduino-cli core install teensy:avr && \
     arduino-cli core install arduino:avr && \
-    arduino-cli core install esp32:esp32
+    arduino-cli core install esp32:esp32@3.3.0
 
 # micro-ROS for Arduino Installation (in the standard sketchbook location)
 RUN mkdir -p /home/$USER_NAME/Arduino/libraries && \
@@ -147,6 +147,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get install -y --no-install-recommends \
     gz-harmonic && \
     # Cleanup apt caches
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install whatever else is needed as root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git-lfs && \
+    git lfs install && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER $USER_NAME

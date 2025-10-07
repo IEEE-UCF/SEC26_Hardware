@@ -47,3 +47,6 @@
 log/*
 build/*
 install/*
+
+# env
+*.env
