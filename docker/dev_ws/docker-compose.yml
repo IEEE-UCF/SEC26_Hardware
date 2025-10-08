@@ -14,7 +14,7 @@ services:
       - ARDUINO_DIRECTORIES_USER=/home/rosdev/.arduino15
     volumes:
       # Mount device access and X11 socket (for Linux)
-      - ../../:/home/rosdev/ros2_workspaces/sec26_hardware:cached
+      - ../../:/home/rosdev/ros2_workspaces/src/sec26_hardware:cached
       - /dev:/dev
       - /tmp/.X11-unix:/tmp/.X11-unix
     # This uses the network mode from the .env file (either 'host' for Linux or 'bridge' for Win/Mac)
