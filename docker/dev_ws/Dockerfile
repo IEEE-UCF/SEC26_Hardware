@@ -151,6 +151,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install whatever else is needed as root
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-jazzy-ros-gz \
+    ros-jazzy-gz-ros2-control \
     git-lfs && \
     git lfs install && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
