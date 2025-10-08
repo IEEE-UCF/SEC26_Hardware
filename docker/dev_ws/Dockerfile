@@ -145,7 +145,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get update && \
     # Install Gazebo harmonic and needed Qt/X11/XCB/OpenGL libs to support GUI
     apt-get install -y --no-install-recommends \
-    gz-harmonic && \
+    gz-harmonic \
+    ros-jazzy-ros-gz-bridge \
+    ros-jazzy-ros-gz-sim \
+    ros-jazzy-ros-gz-image \
+    ros-jazzy-ros-gzharmonic && \
     # Cleanup apt caches
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
