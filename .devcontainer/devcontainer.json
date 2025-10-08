@@ -6,7 +6,7 @@
     // The service within the docker-compose.yml file to use.
     "service": "devcontainer",
     // The workspace folder inside the container.
-    "workspaceFolder": "/home/rosdev/ros2_workspaces/src/sec26_hardware"
+    "workspaceFolder": "/home/rosdev/ros2_workspaces/src/sec26_hardware",
     // This command runs ON THE HOST from the project root. This path is correct.
     "initializeCommand": "bash ./docker/dev_ws/scripts/initialize-env.sh",
     // Set the user the container will run as.
