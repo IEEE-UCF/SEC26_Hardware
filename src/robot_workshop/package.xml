@@ -16,6 +16,7 @@
   <depend>ros_gz_bridge</depend>
   <depend>ros_gz_sim</depend>
   <depend>ros_gz_image</depend>
+  <depend>pynput</depend>
 
   <exec_depend>gz-harmonic</exec_depend>
 

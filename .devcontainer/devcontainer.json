@@ -8,7 +8,7 @@
     // The workspace folder inside the container.
     "workspaceFolder": "/home/rosdev/ros2_workspaces/src/sec26_hardware",
     // This command runs ON THE HOST from the project root. This path is correct.
-    "initializeCommand": "bash ./docker/dev_ws/scripts/initialize-env.sh",
+    //"initializeCommand": "bash ./docker/dev_ws/scripts/initialize-env.sh",
     // Set the user the container will run as.
     "remoteUser": "rosdev",
     // Run install script on post-start. Path is relative to workspaceFolder inside the container.
