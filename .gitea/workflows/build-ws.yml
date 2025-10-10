@@ -61,7 +61,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm64
+          #- linux/arm64 disabled until we get a faster arm64 runner
 
     permissions:
       contents: read
