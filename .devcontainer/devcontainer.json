@@ -6,14 +6,14 @@
     // The service within the docker-compose.yml file to use.
     "service": "devcontainer",
     // The workspace folder inside the container.
-    "workspaceFolder": "/home/rosdev/ros2_workspaces/src/sec26_hardware"
+    "workspaceFolder": "/home/rosdev/ros2_workspaces/src/sec26_hardware",
     // This command runs ON THE HOST from the project root. This path is correct.
     "initializeCommand": "bash ./docker/dev_ws/scripts/initialize-env.sh",
     // Set the user the container will run as.
     "remoteUser": "rosdev",
     // Run install script on post-start. Path is relative to workspaceFolder inside the container.
     // CORRECTED PATH: The path needs to point to where the script is inside the mounted project volume.
-    "postStartCommand": "bash -eux ./docker/dev_ws/scripts/install-dependencies.sh",
+    "postStartCommand": "bash -eux ./docker/dev_ws/scripts/post-startup.sh",
     // The rest of the configuration remains the same.
     "customizations": {
         "vscode": {
@@ -57,7 +57,6 @@
                 "twxs.cmake",
                 "redhat.vscode-yaml",
                 "eamodio.gitlens",
-                "ranch-hand-robotics.rde-pack",
                 "davidanson.vscode-markdownlint",
                 "me-dutour-mathieu.vscode-github-actions"
             ]

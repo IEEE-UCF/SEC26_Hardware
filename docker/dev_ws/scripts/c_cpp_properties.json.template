@@ -1,0 +1,33 @@
+{
+    "configurations": [
+        {
+            "name": "Dev Container - ROS/Arduino",
+            "compilerPath": "/usr/bin/g++",
+            "intelliSenseMode": "linux-gcc-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/ros/jazzy/include/**",
+                "${workspaceFolder}/../../install/*/include/**", 
+                "/home/rosdev/.arduino15/packages/**/cores/**",
+                "/home/rosdev/.arduino15/packages/**/variants/**",
+                "/home/rosdev/.arduino15/packages/**/libraries/**/src/**",
+                "/home/rosdev/.arduino15/packages/**/tools/**/include/**",
+                "/home/rosdev/.arduino15/libraries/**/src/**",
+                "/home/rosdev/Arduino/libraries/**/src/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__linux__"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
+            }
+        }
+    ],
+    "version": 4
+}
