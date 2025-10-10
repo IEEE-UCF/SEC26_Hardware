@@ -8,14 +8,13 @@
             "cppStandard": "c++17",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include",
-                "/usr/local/include",
-                "/usr/include/c++/*",
                 "/opt/ros/jazzy/include/**",
+                "${workspaceFolder}/../../install/*/include/**", 
                 "/home/rosdev/.arduino15/packages/**/cores/**",
                 "/home/rosdev/.arduino15/packages/**/variants/**",
                 "/home/rosdev/.arduino15/packages/**/libraries/**/src/**",
                 "/home/rosdev/.arduino15/packages/**/tools/**/include/**",
+                "/home/rosdev/.arduino15/libraries/**/src/**",
                 "/home/rosdev/Arduino/libraries/**/src/**"
             ],
             "defines": [
