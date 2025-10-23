@@ -32,6 +32,7 @@ setup(
     entry_points={
         'console_scripts': [
             'teleop_pid = robot_workshop.teleop_pid:main',
+            'detector_node = robot_workshop.detector_node:main',
         ],
     },
 )

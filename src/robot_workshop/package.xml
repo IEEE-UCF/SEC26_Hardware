@@ -13,10 +13,13 @@
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>vision_msgs</depend>
   <depend>ros_gz_bridge</depend>
+  <depend>cv_bridge</depend>
   <depend>ros_gz_sim</depend>
   <depend>ros_gz_image</depend>
   <depend>pynput</depend>
+  <depend>python3-opencv</depend>
 
   <exec_depend>gz-harmonic</exec_depend>
 

@@ -5,7 +5,8 @@ Launch file for my_bot in Gazebo Harmonic with ROS 2 bridge
 
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -44,7 +45,27 @@ def generate_launch_description():
         output='screen'
     )
 
+    image_topic_arg = DeclareLaunchArgument('image_topic', default_value='/camera2/image_raw')
+    image_topic = LaunchConfiguration('image_topic')
+
+    
+    vision = Node(
+        package='robot_workshop',
+        executable='detector_node',
+        name='detector_node',
+        output='screen',
+        parameters=[{
+            'image_topic': image_topic,     # change if your bridge publishes a different name
+            'class_name':  'yellow_object',
+            'debug_viz':   True,
+            'pub_topic': '/detected_objects',
+            'pub_debug_image': '/vision/debug_image',
+        }],
+    )
+
     return LaunchDescription([
         gz_sim,
         bridge,
+        image_topic_arg ,
+        vision,
     ])
