@@ -13,6 +13,11 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
 # Install headers (if any)
 # install(DIRECTORY include/ DESTINATION include)
 # install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch)
