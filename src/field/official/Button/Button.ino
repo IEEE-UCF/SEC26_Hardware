@@ -2,7 +2,7 @@
 // The code requires the library ezButton 1.0.4 to be installed
 
 #include <Arduino.h>
-#include <ezButton.h>  // The library to use for SW pin
+#include <ezButton.h> // The library to use for SW pin
 
 #define SW_PIN 4
 
@@ -39,7 +39,7 @@ void setup() {
 }
 
 void loop() {
-  button.loop(); 
+  button.loop();
 
   if (button.isPressed()) {
     Serial.println("The button is pressed");
@@ -47,11 +47,9 @@ void loop() {
 
     if (counter == 1) { // First button press
       digitalWrite(redLED, HIGH);
-    } 
-    else if (counter == 2) { // Second button press
+    } else if (counter == 2) { // Second button press
       digitalWrite(yellowLED, HIGH);
-    }  
-    else if (counter == 3) { // Third button press
+    } else if (counter == 3) { // Third button press
       digitalWrite(greenLED, HIGH);
       if (randomColor == 1) {
         redBrightness = 150;
@@ -78,6 +76,5 @@ void loop() {
       delay(3000);
     }
     delay(500);
-
   }
 }

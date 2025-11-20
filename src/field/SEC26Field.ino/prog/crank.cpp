@@ -5,7 +5,7 @@
  */
 #include "crank.h"
 namespace Program {
-CrankProgram::CrankProgram(Driver::Pca9685 &driver, CrankConfig &config) : BeaconProgram(driver, config.activation_c, config.beacon, config.identifier), _config(config), _counter(0), _prev_CLK_state(0) {}
+CrankProgram::CrankProgram(Driver::Pca9685 &driver, CrankConfig &config) : BeaconProgram(driver, config._c, config.beacon, config.identifier), _config(config), _counter(0), _prev_CLK_state(0) {}
 
 void CrankProgram::begin() {
   reset();
