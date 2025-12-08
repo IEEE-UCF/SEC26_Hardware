@@ -4,7 +4,7 @@ run-name: ${{ gitea.actor }} is deploying to /home/ieee/SEC26_Hardware 🤖
 on:
   push:
     branches:
-      - main
+      - cd_tests
 
 jobs:
   deploy-robot:
