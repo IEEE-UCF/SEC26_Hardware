@@ -1,0 +1,50 @@
+name: Deploy to Raspberry Pi
+run-name: ${{ gitea.actor }} is deploying to /home/ieee/SEC26_Hardware 🤖
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-robot:
+    runs-on: rpi-ros2
+    
+    # 1. Force all steps to run inside your specific directory
+    defaults:
+      run:
+        working-directory: /home/ieee/SEC26_Hardware
+
+    steps:
+      - name: Pull Latest Code
+        run: |
+          echo "📂 Navigating to /home/ieee/SEC26_Hardware..."
+          
+          # Ensure git trusts this directory (prevents "dubious ownership" errors)
+          git config --global --add safe.directory /home/ieee/SEC26_Hardware
+          
+          # Force sync with the repository (WARNING: wipes local uncommitted changes on the Pi)
+          git fetch origin
+          git reset --hard origin/main
+
+      - name: Build and Deploy
+        run: |
+          echo "🚀 Rebuilding from: /home/ieee/SEC26_Hardware/docker/dev_ws/docker-compose.yml"
+          
+          # Define the file path relative to the working directory
+          COMPOSE_FILE="docker/dev_ws/docker-compose.yml"
+          
+          # 1. Stop existing services
+          docker compose -f $COMPOSE_FILE --project-directory . down || true
+          
+          # 2. Rebuild the image
+          # --no-cache is vital to ensure apt-get updates inside the container actually run
+          docker compose -f $COMPOSE_FILE --project-directory . build --no-cache
+          
+          # 3. Start the container
+          docker compose -f $COMPOSE_FILE --project-directory . up -d
+
+      - name: Cleanup
+        run: |
+          echo "🧹 Cleaning up old images..."
+          docker image prune -f
